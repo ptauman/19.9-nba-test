@@ -138,6 +138,10 @@ function showTable(players) {
         var table, _loop_1, _i, players_1, player;
         return __generator(this, function (_a) {
             tableDiv.innerHTML = "";
+            if (players.length === 0) {
+                tableDiv.innerHTML = "No players found";
+                return [2 /*return*/];
+            }
             table = document.createElement("table");
             table.classList.add("table");
             table.id = "players table";
@@ -182,6 +186,7 @@ function showTable(players) {
     });
 }
 function addToMyFantasyTeam(player) {
+    console.log(player.position);
     var myFantasy = loadFromStorage();
     myFantasy[player.position] = player;
     saveToStorage(myFantasy);

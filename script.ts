@@ -112,6 +112,11 @@ searchForm.addEventListener("submit", async (event) => {
 
 async function showTable(players :player[]):Promise<void> {
     tableDiv.innerHTML = "";
+
+    if (players.length === 0){
+        tableDiv.innerHTML = "No players found"
+        return
+    }
  
     const table = document.createElement("table");
     table.classList.add("table");
@@ -158,6 +163,7 @@ async function showTable(players :player[]):Promise<void> {
     }
 }
 function addToMyFantasyTeam(player : player){
+    console.log(player.position)
     const myFantasy = loadFromStorage()
     myFantasy[player.position] = player
     saveToStorage(myFantasy)
