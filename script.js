@@ -35,48 +35,29 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var _this = this;
+//קביעת כתובת היוארל שלנו
 var BASE_URL = "https://nbaserver-q21u.onrender.com/api/filter/";
+var SAVE_URL = "https://nbaserver-q21u.onrender.com/api/AddTeam";
+//פורם החיפוש וסלקטור החיפוש
 var searchForm = document.getElementById("search form");
 var searchSelect = document.getElementById("search");
+//טווחי החיפוש
 var pointsRange = document.getElementById("points range");
 var fgRange = document.getElementById("fg% range");
 var threeRange = document.getElementById("3p% range");
+//כיתוב טווחי החיפוש
 var pointsRangeSpan = document.getElementById("points range label");
 var fgRangeSpan = document.getElementById("fg% range label");
 var threeRangeSpan = document.getElementById("3p% range label");
+//אלמנט הטבלה
 var tableDiv = document.getElementById("tableDiv");
-var pgplayet = document.getElementById("point guard div");
-var sgplayet = document.getElementById("shooting guard div");
-var sfplayet = document.getElementById("small forward div");
-var pfplayet = document.getElementById("power forward div");
-var cplayet = document.getElementById("center div");
-var player1 = {
-    age: 0,
-    games: 0,
-    playerName: "",
-    points: 0,
-    position: "PG",
-    season: [],
-    team: "",
-    threePercent: 54,
-    twoPercent: 65,
-    _v: 0,
-    _id: "654"
-};
-var player2 = {
-    age: 1,
-    games: 1,
-    playerName: "",
-    points: 1,
-    position: "PG",
-    season: [],
-    team: "",
-    threePercent: 32,
-    twoPercent: 12,
-    _v: 1,
-    _id: "876"
-};
-var players = [player1, player2];
+//אלמנטי השחקנים
+var pgplayer = document.getElementById("point guard div");
+var sgplayer = document.getElementById("shooting guard div");
+var sfplayer = document.getElementById("small forward div");
+var pfplayer = document.getElementById("power forward div");
+var cplayer = document.getElementById("center div");
+//קבלת נתונים מהשרת
 function getPlayersFromAPI(parameter) {
     return __awaiter(this, void 0, void 0, function () {
         var response, data, error_1;
@@ -88,7 +69,7 @@ function getPlayersFromAPI(parameter) {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json",
-                            },
+                            }, //מצרפים לבקשה גם את האלמנט שצריך להוסיף
                             body: JSON.stringify(parameter),
                         })];
                 case 1:
@@ -96,6 +77,7 @@ function getPlayersFromAPI(parameter) {
                     return [4 /*yield*/, response.json()];
                 case 2:
                     data = _a.sent();
+                    //החזרת המשתנה וטיפול בשגיאה
                     return [2 /*return*/, data];
                 case 3:
                     error_1 = _a.sent();
@@ -105,40 +87,41 @@ function getPlayersFromAPI(parameter) {
         });
     });
 }
+//האזנה לכפתור החיפוש
 searchForm.addEventListener("submit", function (event) { return __awaiter(_this, void 0, void 0, function () {
-    var userRequest, players, myFantasy;
+    var userRequest, players;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
+                //מניעת ניקוי הטופס
                 event.preventDefault();
                 userRequest = {
+                    //האלמנט שואב משדה הבחירה
                     position: searchSelect.value,
+                    //האלמנט שואב נתונים משלוש שדות הטווח
                     twoPercent: Number(fgRange.value),
                     threePercent: Number(threeRange.value),
-                    points: Number(pointsRange.value)
+                    points: Number(pointsRange.value),
                 };
-                return [4 /*yield*/, getPlayersFromAPI(userRequest)
-                    // const players = [player1, player2]
-                    // const players = []
-                ];
+                return [4 /*yield*/, getPlayersFromAPI(userRequest)];
             case 1:
                 players = _a.sent();
-                // const players = [player1, player2]
-                // const players = []
+                //קראיה לפונקצייה הצגת טבלה והעברת רשימת השחקנים אליה
                 showTable(players);
-                myFantasy = loadFromStorage();
-                showPlayers(myFantasy);
-                console.log(players);
                 return [2 /*return*/];
         }
     });
 }); });
+//פונקציה להצגת הטבלה המקבל רשימה של שחקנים
 function showTable(players) {
     return __awaiter(this, void 0, void 0, function () {
-        var table, _loop_1, _i, players_1, player;
+        var table, hedername, hederposition, hederpoints, hederfg, heder3p, hederbuton, _loop_1, _i, players_1, player;
         return __generator(this, function (_a) {
+            //הפונקציה מרוקנת את אלמנט הטבלה מתכנים קיימים - באם ישנם
             tableDiv.innerHTML = "";
+            //ככל וברשימת השחקנים שהתקבלה מהקריאה לפונקציה הנוכחית, אין תוכן
             if (players.length === 0) {
+                //תוצג הודעה והפונקציה תחדל מביצוע
                 tableDiv.innerHTML = "No players found";
                 return [2 /*return*/];
             }
@@ -146,37 +129,71 @@ function showTable(players) {
             table.classList.add("table");
             table.id = "players table";
             tableDiv.appendChild(table);
+            hedername = document.createElement("th");
+            hedername.textContent = "Name";
+            hedername.classList.add("th");
+            table.appendChild(hedername);
+            hederposition = document.createElement("th");
+            hederposition.textContent = "Position";
+            hederposition.classList.add("th");
+            table.appendChild(hederposition);
+            hederpoints = document.createElement("th");
+            hederpoints.textContent = "th";
+            hederpoints.classList.add("cell");
+            table.appendChild(hederpoints);
+            hederfg = document.createElement("th");
+            hederfg.textContent = "FG%";
+            hederfg.classList.add("th");
+            table.appendChild(hederfg);
+            heder3p = document.createElement("th");
+            heder3p.textContent = "3P%";
+            heder3p.classList.add("th");
+            table.appendChild(heder3p);
+            hederbuton = document.createElement("th");
+            hederbuton.textContent = "add to fantasty team";
+            hederbuton.classList.add("th");
+            table.appendChild(hederbuton);
             _loop_1 = function (player) {
+                //יצירת שורה והוספתה לטבלה
                 var row = document.createElement("tr");
                 table.appendChild(row);
+                //יצירת תא לשםת קביעת ערכות הוספת קלאס והוספה לאמ=למט האב
                 var namecell = document.createElement("td");
                 namecell.textContent = player.playerName;
                 namecell.classList.add("cell");
                 row.appendChild(namecell);
+                //תא לסוג השחקן
                 var positioncell = document.createElement("td");
                 positioncell.textContent = player.position;
                 positioncell.classList.add("cell");
                 row.appendChild(positioncell);
+                //תא לנקודות 
                 var pointscell = document.createElement("td");
                 pointscell.textContent = player.points.toString();
                 pointscell.classList.add("cell");
                 row.appendChild(pointscell);
+                //תא למשהו הראשון
                 var threePercentcell = document.createElement("td");
                 threePercentcell.textContent = player.threePercent.toString();
                 threePercentcell.classList.add("cell");
                 row.appendChild(threePercentcell);
+                //תא למשהו השני
                 var twoPercentcell = document.createElement("td");
                 twoPercentcell.textContent = player.twoPercent.toString();
                 twoPercentcell.classList.add("cell");
                 row.appendChild(twoPercentcell);
+                //כפתור
                 var addToFantasyButton = document.createElement("button");
-                addToFantasyButton.classList.add("addToFantsyButton");
+                addToFantasyButton.classList.add("buton");
                 addToFantasyButton.textContent = "Add to Fanatsy";
+                //הוספת האזנה לכפותר
                 addToFantasyButton.addEventListener("click", function () {
+                    //ככל והכפתור יילחץ נקרא לפונקציית הוספת שחקן ונעביר לה את השחקן הנוכחי
                     addToMyFantasyTeam(player);
                 });
                 row.appendChild(addToFantasyButton);
             };
+            //עבור כל שחקן בקשימת השחקניםש התקבלה
             for (_i = 0, players_1 = players; _i < players_1.length; _i++) {
                 player = players_1[_i];
                 _loop_1(player);
@@ -185,54 +202,70 @@ function showTable(players) {
         });
     });
 }
+//פונקציה להופסת שחקן לקבוצה. מקבלת את השחקן בקריאה אליה
 function addToMyFantasyTeam(player) {
-    console.log(player.position);
+    //שליפת רשימת החשקנים בקבוצה
     var myFantasy = loadFromStorage();
+    //דוחפת את השחקן לקטגוריה המתאימה
     myFantasy[player.position] = player;
+    //שמירת הקבוצה מחדש 
     saveToStorage(myFantasy);
+    //הצגת השחקנים בקבוצה
     showPlayers(myFantasy);
 }
+//פונקציה לשמירה בזכירון. מקבלת אובייקט בן כמה שחקנים
 function saveToStorage(myFantasy) {
     localStorage.setItem("myFantasy", JSON.stringify(myFantasy));
 }
+//פונקציה לשליפת רשימת השחקנים. מחזירה אובייקט בן כמה שחקנים
 function loadFromStorage() {
     var myFantasy = JSON.parse(localStorage.getItem("myFantasy") || "{}");
     return myFantasy;
 }
+//פונקציה להצגת השחקנים בכרטיסים שלהםץ
 function showPlayers(FantasyTeam) {
+    //ניקח כל שחקן ונשלח אותו ואת האלמנט המתאים לפונקציה שתוסיף את התוכן
     if (FantasyTeam.PG) {
-        showPlayer(FantasyTeam.PG, pgplayet);
+        showPlayer(FantasyTeam.PG, pgplayer);
     }
     if (FantasyTeam.SG) {
-        showPlayer(FantasyTeam.SG, sgplayet);
+        showPlayer(FantasyTeam.SG, sgplayer);
     }
     if (FantasyTeam.SF) {
-        showPlayer(FantasyTeam.SF, sfplayet);
+        showPlayer(FantasyTeam.SF, sfplayer);
     }
     if (FantasyTeam.PF) {
-        showPlayer(FantasyTeam.PF, pfplayet);
+        showPlayer(FantasyTeam.PF, pfplayer);
     }
     if (FantasyTeam.C) {
-        showPlayer(FantasyTeam.C, cplayet);
+        showPlayer(FantasyTeam.C, cplayer);
     }
 }
+//פונקציה למילוי כרטיסי השחרקנים. מקבלת שחקן ואמנט מתאים
 function showPlayer(player, element) {
+    //ריקון הכרטיס
     element.innerHTML = "";
+    //בניית רישמה
     var list = document.createElement("ul");
     element.appendChild(list);
+    // שורה לשם
     var name = document.createElement("li");
     name.textContent = player.playerName;
     list.appendChild(name);
+    //שורה לעוד מאפיין
     var threePercent = document.createElement("li");
     threePercent.textContent = "threePercent ".concat(player.threePercent.toString());
     list.appendChild(threePercent);
+    //עוד מאפיין
     var twoPercent = document.createElement("li");
     twoPercent.textContent = "twoPercent ".concat(player.twoPercent.toString());
     list.appendChild(twoPercent);
+    //עוד מאפיין
     var points = document.createElement("li");
     points.textContent = "points ".concat(player.points.toString());
     list.appendChild(points);
 }
+//האזנה לטעינת הטפס
 document.addEventListener("DOMContentLoaded", function () { return __awaiter(_this, void 0, void 0, function () {
     var myFantasy;
     return __generator(this, function (_a) {
@@ -241,6 +274,7 @@ document.addEventListener("DOMContentLoaded", function () { return __awaiter(_th
         return [2 /*return*/];
     });
 }); });
+//האזנה לטווחים וייצוג הערך שלהם
 threeRange.addEventListener("change", function () {
     threeRangeSpan.textContent = threeRange.value;
 });
@@ -250,3 +284,9 @@ fgRange.addEventListener("change", function () {
 pointsRange.addEventListener("change", function () {
     pointsRangeSpan.textContent = pointsRange.value;
 });
+//האזנה לסלקטור
+searchSelect.addEventListener("change", function () {
+    //מחיקת הטבלה. נועד למנוע הוספה של ערכים מהטבלה השייכים לסוג אחד לפי הסלדטור שנמצא כרגע בסוג אחר
+    tableDiv.innerHTML = "";
+});
+console.log(loadFromStorage());

@@ -1,241 +1,258 @@
-const BASE_URL = "https://nbaserver-q21u.onrender.com/api/filter/"
-
+//קביעת כתובת היוארל שלנו
+const BASE_URL = "https://nbaserver-q21u.onrender.com/api/filter/";
+const SAVE_URL = "https://nbaserver-q21u.onrender.com/api/AddTeam";
+//פורם החיפוש וסלקטור החיפוש
 const searchForm = document.getElementById("search form") as HTMLFormElement;
 const searchSelect = document.getElementById("search") as HTMLSelectElement;
-
+//טווחי החיפוש
 const pointsRange = document.getElementById("points range") as HTMLInputElement;
 const fgRange = document.getElementById("fg% range") as HTMLInputElement;
 const threeRange = document.getElementById("3p% range") as HTMLInputElement;
-
+//כיתוב טווחי החיפוש
 const pointsRangeSpan = document.getElementById("points range label") as HTMLSpanElement;
 const fgRangeSpan = document.getElementById("fg% range label") as HTMLSpanElement;
 const threeRangeSpan = document.getElementById("3p% range label") as HTMLSpanElement;
-
+//אלמנט הטבלה
 const tableDiv = document.getElementById("tableDiv") as HTMLDivElement;
-
-const pgplayet = document.getElementById("point guard div") as HTMLDivElement;
-const sgplayet = document.getElementById("shooting guard div") as HTMLDivElement;
-const sfplayet = document.getElementById("small forward div") as HTMLDivElement;
-const pfplayet = document.getElementById("power forward div") as HTMLDivElement;
-const cplayet = document.getElementById("center div") as HTMLDivElement;
-
+//אלמנטי השחקנים
+const pgplayer = document.getElementById("point guard div") as HTMLDivElement;
+const sgplayer = document.getElementById( "shooting guard div") as HTMLDivElement;
+const sfplayer = document.getElementById("small forward div") as HTMLDivElement;
+const pfplayer = document.getElementById("power forward div") as HTMLDivElement;
+const cplayer = document.getElementById("center div") as HTMLDivElement;
+// אבטיפוס של קבוצת שחקנים כפי שהיא נשמרת בזיכרון מקומי או מועברת להצגה
 interface FantasyTeam {
-    PG? : player,
-    SG? : player,
-    SF? : player,
-    PF? : player,
-    C? : player
+  PG?: player;
+  SG?: player;
+  SF?: player;
+  PF?: player;
+  C?: player;
 }
-
+//אבטיפוס של אלמנט לבקשת קבלת שחקנים
 interface Myrequest {
-    position: string;
-    twoPercent: number;
-    threePercent: number;
-    points: number;
+  position: string;
+  twoPercent: number;
+  threePercent: number;
+  points: number;
 }
+//אבטיפוס של שחקן כפי שמתקבל מהשרת
 interface player {
-    age : number;
-    games : number;
-    playerName : string;
-    points : number;
-    position : string;
-    season : number[];
-    team : string;
-    threePercent : number;
-    twoPercent : number;
-    _v : number;
-    _id : string;
+  age: number;
+  games: number;
+  playerName: string;
+  points: number;
+  position: string;
+  season: number[];
+  team: string;
+  threePercent: number;
+  twoPercent: number;
+  _v: number;
+  _id: string;
 }
-const player1 : player = {
-    age : 0,
-    games : 0,
-    playerName : "",
-    points : 0,
-    position : "PG",
-    season : [],
-    team : "",
-    threePercent : 54,
-    twoPercent : 65,
-    _v : 0,
-    _id : "654"
+//קבלת נתונים מהשרת
+async function getPlayersFromAPI(parameter: Myrequest): Promise<player[]> {
+  try {//משתנה שיכיל את התשובה
+    const response = await fetch(BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },//מצרפים לבקשה גם את האלמנט שצריך להוסיף
+      body: JSON.stringify(parameter),
+    });//משתנה שמכיל את התשובה בג'אווה סקריפט
+    const data = await response.json();
+    //החזרת המשתנה וטיפול בשגיאה
+    return data;
+  } catch (error) {
+    return error;
+  }
 }
-const player2 : player = {
-    age : 1,
-    games : 1,
-    playerName : "",
-    points : 1,
-    position : "PG",
-    season : [],
-    team : "",
-    threePercent : 32,
-    twoPercent : 12,
-    _v : 1,
-    _id : "876"
-}
-const players = [player1, player2]
-
-
-async function getPlayersFromAPI(parameter: Myrequest) :Promise<player[]> {
-    try{
-        const response = await fetch(BASE_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(parameter),
-        });
-        const data = await response.json();
-        return data
-    }
-    catch(error){
-        return error
-    }
-}
-
-
+//האזנה לכפתור החיפוש
 searchForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    let userRequest  :Myrequest = {
-        position : searchSelect.value,
-        twoPercent : Number(fgRange.value),
-        threePercent: Number(threeRange.value),
-        points: Number(pointsRange.value)
-    }
-    const players = await getPlayersFromAPI(userRequest)
-    // const players = [player1, player2]
-    // const players = []
-    showTable (players)
-    const myFantasy = loadFromStorage()
-    showPlayers(myFantasy)
-    console.log(players)
+    //מניעת ניקוי הטופס
+  event.preventDefault();
+  //הגדרת אלמנט חדש לבקשה
+  let userRequest: Myrequest = {
+    //האלמנט שואב משדה הבחירה
+    position: searchSelect.value,
+    //האלמנט שואב נתונים משלוש שדות הטווח
+    twoPercent: Number(fgRange.value),
+    threePercent: Number(threeRange.value),
+    points: Number(pointsRange.value),
+  };//למנט נשלח לפונקציית ביצוע הבקשות. אלמנט אחר מקבל את התוכן שיוחזר מהבקשהת
+  const players = await getPlayersFromAPI(userRequest);
+  //קראיה לפונקצייה הצגת טבלה והעברת רשימת השחקנים אליה
+  showTable(players);
 });
+//פונקציה להצגת הטבלה המקבל רשימה של שחקנים
+async function showTable(players: player[]): Promise<void> {
+    //הפונקציה מרוקנת את אלמנט הטבלה מתכנים קיימים - באם ישנם
+  tableDiv.innerHTML = "";
+//ככל וברשימת השחקנים שהתקבלה מהקריאה לפונקציה הנוכחית, אין תוכן
+  if (players.length === 0) {
+    //תוצג הודעה והפונקציה תחדל מביצוע
+    tableDiv.innerHTML = "No players found";
+    return;
+  }
+//יצירת טבלהת הוספת קלאס , מספר מזהה והוספתה לאלמנט הטבלה
+  const table = document.createElement("table");
+  table.classList.add("table");
+  table.id = "players table";
+  tableDiv.appendChild(table);
+//כותרות
+  const hedername = document.createElement("th")
+  hedername.textContent = "Name"
+  hedername.classList.add("th")
+  table.appendChild(hedername)
 
-async function showTable(players :player[]):Promise<void> {
-    tableDiv.innerHTML = "";
+  const hederposition = document.createElement("th")
+  hederposition.textContent = "Position"
+  hederposition.classList.add("th")
+  table.appendChild(hederposition)
 
-    if (players.length === 0){
-        tableDiv.innerHTML = "No players found"
-        return
-    }
- 
-    const table = document.createElement("table");
-    table.classList.add("table");
-    table.id = "players table";
-    tableDiv.appendChild(table);
+  const hederpoints = document.createElement("th")
+  hederpoints.textContent = "th"
+  hederpoints.classList.add("cell")
+  table.appendChild(hederpoints)
 
-    for (let player of players){
+  const hederfg = document.createElement("th")
+  hederfg.textContent = "FG%"
+  hederfg.classList.add("th")
+  table.appendChild(hederfg)
 
-        const row = document.createElement("tr");
-        table.appendChild(row);
+  const heder3p = document.createElement("th")
+  heder3p.textContent = "3P%"
+  heder3p.classList.add("th")
+  table.appendChild(heder3p)
 
-        const namecell = document.createElement("td");
-        namecell.textContent = player.playerName;
-        namecell.classList.add("cell");
-        row.appendChild(namecell);
+  const hederbuton = document.createElement("th")
+  hederbuton.textContent = "add to fantasty team"
+  hederbuton.classList.add("th")
+  table.appendChild(hederbuton)
 
-        const positioncell = document.createElement("td");
-        positioncell.textContent = player.position;
-        positioncell.classList.add("cell");
-        row.appendChild(positioncell);
-
-        const pointscell = document.createElement("td");
-        pointscell.textContent = player.points.toString();
-        pointscell.classList.add("cell");
-        row.appendChild(pointscell);
-
-        const threePercentcell = document.createElement("td");
-        threePercentcell.textContent = player.threePercent.toString();
-        threePercentcell.classList.add("cell");
-        row.appendChild(threePercentcell);
-
-        const twoPercentcell = document.createElement("td");
-        twoPercentcell.textContent = player.twoPercent.toString();
-        twoPercentcell.classList.add("cell");
-        row.appendChild(twoPercentcell);
-
-        const addToFantasyButton = document.createElement("button");
-        addToFantasyButton.classList.add("addToFantsyButton");
-        addToFantasyButton.textContent = "Add to Fanatsy";
-        addToFantasyButton.addEventListener("click", () => {
-            addToMyFantasyTeam(player);
-        });
-        row.appendChild(addToFantasyButton);        
-    }
+//עבור כל שחקן בקשימת השחקניםש התקבלה
+  for (let player of players) {
+    //יצירת שורה והוספתה לטבלה
+    const row = document.createElement("tr");
+    table.appendChild(row);
+    //יצירת תא לשםת קביעת ערכות הוספת קלאס והוספה לאמ=למט האב
+    const namecell = document.createElement("td");
+    namecell.textContent = player.playerName;
+    namecell.classList.add("cell");
+    row.appendChild(namecell);
+//תא לסוג השחקן
+    const positioncell = document.createElement("td");
+    positioncell.textContent = player.position;
+    positioncell.classList.add("cell");
+    row.appendChild(positioncell);
+//תא לנקודות 
+    const pointscell = document.createElement("td");
+    pointscell.textContent = player.points.toString();
+    pointscell.classList.add("cell");
+    row.appendChild(pointscell);
+//תא למשהו הראשון
+    const threePercentcell = document.createElement("td");
+    threePercentcell.textContent = player.threePercent.toString();
+    threePercentcell.classList.add("cell");
+    row.appendChild(threePercentcell);
+//תא למשהו השני
+    const twoPercentcell = document.createElement("td");
+    twoPercentcell.textContent = player.twoPercent.toString();
+    twoPercentcell.classList.add("cell");
+    row.appendChild(twoPercentcell);
+//כפתור
+    const addToFantasyButton = document.createElement("button");
+    addToFantasyButton.classList.add("buton");
+    addToFantasyButton.textContent = "Add to Fanatsy";
+    //הוספת האזנה לכפותר
+    addToFantasyButton.addEventListener("click", () => {
+        //ככל והכפתור יילחץ נקרא לפונקציית הוספת שחקן ונעביר לה את השחקן הנוכחי
+      addToMyFantasyTeam(player);
+    });
+    row.appendChild(addToFantasyButton);
+  }
 }
-function addToMyFantasyTeam(player : player){
-    console.log(player.position)
-    const myFantasy = loadFromStorage()
-    myFantasy[player.position] = player
-    saveToStorage(myFantasy)
-    showPlayers(myFantasy)   
+//פונקציה להופסת שחקן לקבוצה. מקבלת את השחקן בקריאה אליה
+function addToMyFantasyTeam(player: player) {
+  //שליפת רשימת החשקנים בקבוצה
+  const myFantasy = loadFromStorage();
+  //דוחפת את השחקן לקטגוריה המתאימה
+  myFantasy[player.position] = player;
+  //שמירת הקבוצה מחדש 
+  saveToStorage(myFantasy);
+  //הצגת השחקנים בקבוצה
+  showPlayers(myFantasy);
 }
-
-function saveToStorage(myFantasy : FantasyTeam){
-    localStorage.setItem("myFantasy", JSON.stringify(myFantasy))
+//פונקציה לשמירה בזכירון. מקבלת אובייקט בן כמה שחקנים
+function saveToStorage(myFantasy: FantasyTeam) {
+  localStorage.setItem("myFantasy", JSON.stringify(myFantasy));
 }
-function loadFromStorage(){
-     const myFantasy = JSON.parse(localStorage.getItem("myFantasy") || "{}")
-     return myFantasy
+//פונקציה לשליפת רשימת השחקנים. מחזירה אובייקט בן כמה שחקנים
+function loadFromStorage() {
+  const myFantasy = JSON.parse(localStorage.getItem("myFantasy") || "{}");
+  return myFantasy;
 }
-
-function showPlayers(FantasyTeam : FantasyTeam){
-    if (FantasyTeam.PG){
-        showPlayer(FantasyTeam.PG, pgplayet)
-    }
-    if (FantasyTeam.SG){
-        showPlayer(FantasyTeam.SG, sgplayet)
-    }
-    if (FantasyTeam.SF){
-        showPlayer(FantasyTeam.SF, sfplayet)
-    }
-    if (FantasyTeam.PF){
-        showPlayer(FantasyTeam.PF, pfplayet)
-    }
-    if (FantasyTeam.C){
-        showPlayer(FantasyTeam.C, cplayet)
-    }
+//פונקציה להצגת השחקנים בכרטיסים שלהםץ
+function showPlayers(FantasyTeam: FantasyTeam) {
+  //ניקח כל שחקן ונשלח אותו ואת האלמנט המתאים לפונקציה שתוסיף את התוכן
+  if (FantasyTeam.PG) {
+    showPlayer(FantasyTeam.PG, pgplayer);
+  }
+  if (FantasyTeam.SG) {
+    showPlayer(FantasyTeam.SG, sgplayer);
+  }
+  if (FantasyTeam.SF) {
+    showPlayer(FantasyTeam.SF, sfplayer);
+  }
+  if (FantasyTeam.PF) {
+    showPlayer(FantasyTeam.PF, pfplayer);
+  }
+  if (FantasyTeam.C) {
+    showPlayer(FantasyTeam.C, cplayer);
+  }
 }
-
-function showPlayer(player : player, element : HTMLDivElement){
-    element.innerHTML = "";
-
-   const list = document.createElement("ul");
-   element.appendChild(list);
-
-   const name = document.createElement("li");
-   name.textContent = player.playerName;
-   list.appendChild(name);
-   
-   const threePercent = document.createElement("li");
-   threePercent.textContent = `threePercent ${player.threePercent.toString()}`;
-   list.appendChild(threePercent);
-
-   const twoPercent = document.createElement("li");
-   twoPercent.textContent = `twoPercent ${player.twoPercent.toString()}`;
-   list.appendChild(twoPercent);
-
-   const points = document.createElement("li");
-   points.textContent = `points ${player.points.toString()}`
-   list.appendChild(points);
+//פונקציה למילוי כרטיסי השחרקנים. מקבלת שחקן ואמנט מתאים
+function showPlayer(player: player, element: HTMLDivElement) {
+  //ריקון הכרטיס
+  element.innerHTML = "";
+//בניית רישמה
+  const list = document.createElement("ul");
+  element.appendChild(list);
+// שורה לשם
+  const name = document.createElement("li");
+  name.textContent = player.playerName;
+  list.appendChild(name);
+//שורה לעוד מאפיין
+  const threePercent = document.createElement("li");
+  threePercent.textContent = `threePercent ${player.threePercent.toString()}`;
+  list.appendChild(threePercent);
+//עוד מאפיין
+  const twoPercent = document.createElement("li");
+  twoPercent.textContent = `twoPercent ${player.twoPercent.toString()}`;
+  list.appendChild(twoPercent);
+//עוד מאפיין
+  const points = document.createElement("li");
+  points.textContent = `points ${player.points.toString()}`;
+  list.appendChild(points);
 }
-
+//האזנה לטעינת הטפס
 document.addEventListener("DOMContentLoaded", async () => {
-    const myFantasy = loadFromStorage()
-    showPlayers(myFantasy)   
-})
-
-
+  //שליפת רישמת השחקנים והצגתם
+  const myFantasy = loadFromStorage();
+  showPlayers(myFantasy);
+});
+//האזנה לטווחים וייצוג הערך שלהם
 threeRange.addEventListener("change", () => {
-    threeRangeSpan.textContent = threeRange.value
-})
+  threeRangeSpan.textContent = threeRange.value;
+});
 fgRange.addEventListener("change", () => {
-    fgRangeSpan.textContent = fgRange.value
-})
+  fgRangeSpan.textContent = fgRange.value;
+});
 pointsRange.addEventListener("change", () => {
-    pointsRangeSpan.textContent = pointsRange.value
-})
-
-    
-
-
-
+  pointsRangeSpan.textContent = pointsRange.value;
+});
+//האזנה לסלקטור
+searchSelect.addEventListener("change", () => {
+  //מחיקת הטבלה. נועד למנוע הוספה של ערכים מהטבלה השייכים לסוג אחד לפי הסלדטור שנמצא כרגע בסוג אחר
+  tableDiv.innerHTML = "";
+});
+console.log(loadFromStorage());

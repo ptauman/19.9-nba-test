@@ -7,8 +7,8 @@ body{
 
 }
 .player {
-    width: 150px;
-    height: 250px;
+    width: 200px;
+    height: 300px;
     display: flex;
     justify-content:center;
     align-items: center;
@@ -32,7 +32,8 @@ H1{
     width: 100%;
     text-align: center;
     top: 30px;
-
+    background-color: rgb(4, 27, 141);
+    color: white;
 }
 .table{
     position: relative;
@@ -52,8 +53,34 @@ H1{
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: aquamarine;
+    background-color: rgb(198, 199, 199);
 }
 ul{
     list-style-type: none;
+}
+.input{
+    width: 80%;
+    margin: 3px;
+    padding: 3px;
+    border: 1px solid black;
+    padding: 10px;
+
+}
+#searchContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(218, 219, 218);
+    border: 1px solid black;
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid black;
+    padding: 10px;
+}
+.buton{
+    background-color: rgb(63, 32, 185);
+    padding: 10px;
+    margin: 10px;
+    padding: 10px;
+    color: white;
 }
