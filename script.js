@@ -93,6 +93,11 @@ searchForm.addEventListener("submit", function (event) { return __awaiter(_this,
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
+                //במידה והוא לא בחר משהו מתאים זה יקפיץ הודעה
+                if (searchSelect.value === "default") {
+                    alert("Please select a position");
+                    return [2 /*return*/];
+                }
                 //מניעת ניקוי הטופס
                 event.preventDefault();
                 userRequest = {
@@ -138,8 +143,8 @@ function showTable(players) {
             hederposition.classList.add("th");
             table.appendChild(hederposition);
             hederpoints = document.createElement("th");
-            hederpoints.textContent = "th";
-            hederpoints.classList.add("cell");
+            hederpoints.textContent = "points";
+            hederpoints.classList.add("th");
             table.appendChild(hederpoints);
             hederfg = document.createElement("th");
             hederfg.textContent = "FG%";
@@ -245,6 +250,9 @@ function showPlayers(FantasyTeam) {
 function showPlayer(player, element) {
     //ריקון הכרטיס
     element.innerHTML = "";
+    var paragraf = document.createElement("p");
+    paragraf.textContent = player.position;
+    element.appendChild(paragraf);
     //בניית רישמה
     var list = document.createElement("ul");
     element.appendChild(list);

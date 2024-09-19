@@ -68,6 +68,12 @@ async function getPlayersFromAPI(parameter: Myrequest): Promise<player[]> {
 }
 //האזנה לכפתור החיפוש
 searchForm.addEventListener("submit", async (event) => {
+  //במידה והוא לא בחר משהו מתאים זה יקפיץ הודעה
+  if(searchSelect.value === "default"){
+    alert ("Please select a position");
+    return;
+    
+  }
     //מניעת ניקוי הטופס
   event.preventDefault();
   //הגדרת אלמנט חדש לבקשה
@@ -110,8 +116,8 @@ async function showTable(players: player[]): Promise<void> {
   table.appendChild(hederposition)
 
   const hederpoints = document.createElement("th")
-  hederpoints.textContent = "th"
-  hederpoints.classList.add("cell")
+  hederpoints.textContent = "points"
+  hederpoints.classList.add("th")
   table.appendChild(hederpoints)
 
   const hederfg = document.createElement("th")
@@ -214,6 +220,10 @@ function showPlayers(FantasyTeam: FantasyTeam) {
 function showPlayer(player: player, element: HTMLDivElement) {
   //ריקון הכרטיס
   element.innerHTML = "";
+  const paragraf = document.createElement("p");
+  paragraf.textContent = player.position;
+  element.appendChild(paragraf);
+
 //בניית רישמה
   const list = document.createElement("ul");
   element.appendChild(list);
