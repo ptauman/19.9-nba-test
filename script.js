@@ -41,6 +41,9 @@ var searchSelect = document.getElementById("search");
 var pointsRange = document.getElementById("points range");
 var fgRange = document.getElementById("fg% range");
 var threeRange = document.getElementById("3p% range");
+var pointsRangeSpan = document.getElementById("points range label");
+var fgRangeSpan = document.getElementById("fg% range label");
+var threeRangeSpan = document.getElementById("3p% range label");
 var tableDiv = document.getElementById("tableDiv");
 var pgplayet = document.getElementById("point guard div");
 var sgplayet = document.getElementById("shooting guard div");
@@ -105,26 +108,35 @@ function getPlayersFromAPI(parameter) {
 searchForm.addEventListener("submit", function (event) { return __awaiter(_this, void 0, void 0, function () {
     var userRequest, players, myFantasy;
     return __generator(this, function (_a) {
-        event.preventDefault();
-        userRequest = {
-            position: searchSelect.value,
-            twoPercent: Number(pointsRange.value),
-            threePercent: Number(fgRange.value),
-            points: Number(threeRange.value)
-        };
-        players = [player1, player2];
-        // const players = []
-        showTable(players);
-        myFantasy = loadFromStorage();
-        showPlayers(myFantasy);
-        return [2 /*return*/];
+        switch (_a.label) {
+            case 0:
+                event.preventDefault();
+                userRequest = {
+                    position: searchSelect.value,
+                    twoPercent: Number(fgRange.value),
+                    threePercent: Number(threeRange.value),
+                    points: Number(pointsRange.value)
+                };
+                return [4 /*yield*/, getPlayersFromAPI(userRequest)
+                    // const players = [player1, player2]
+                    // const players = []
+                ];
+            case 1:
+                players = _a.sent();
+                // const players = [player1, player2]
+                // const players = []
+                showTable(players);
+                myFantasy = loadFromStorage();
+                showPlayers(myFantasy);
+                console.log(players);
+                return [2 /*return*/];
+        }
     });
 }); });
 function showTable(players) {
     return __awaiter(this, void 0, void 0, function () {
         var table, _loop_1, _i, players_1, player;
         return __generator(this, function (_a) {
-            console.log("it is a test");
             tableDiv.innerHTML = "";
             table = document.createElement("table");
             table.classList.add("table");
@@ -200,6 +212,7 @@ function showPlayers(FantasyTeam) {
     }
 }
 function showPlayer(player, element) {
+    element.innerHTML = "";
     var list = document.createElement("ul");
     element.appendChild(list);
     var name = document.createElement("li");
@@ -223,3 +236,12 @@ document.addEventListener("DOMContentLoaded", function () { return __awaiter(_th
         return [2 /*return*/];
     });
 }); });
+threeRange.addEventListener("change", function () {
+    threeRangeSpan.textContent = threeRange.value;
+});
+fgRange.addEventListener("change", function () {
+    fgRangeSpan.textContent = fgRange.value;
+});
+pointsRange.addEventListener("change", function () {
+    pointsRangeSpan.textContent = pointsRange.value;
+});

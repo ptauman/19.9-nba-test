@@ -2,9 +2,14 @@ const BASE_URL = "https://nbaserver-q21u.onrender.com/api/filter/"
 
 const searchForm = document.getElementById("search form") as HTMLFormElement;
 const searchSelect = document.getElementById("search") as HTMLSelectElement;
+
 const pointsRange = document.getElementById("points range") as HTMLInputElement;
 const fgRange = document.getElementById("fg% range") as HTMLInputElement;
 const threeRange = document.getElementById("3p% range") as HTMLInputElement;
+
+const pointsRangeSpan = document.getElementById("points range label") as HTMLSpanElement;
+const fgRangeSpan = document.getElementById("fg% range label") as HTMLSpanElement;
+const threeRangeSpan = document.getElementById("3p% range label") as HTMLSpanElement;
 
 const tableDiv = document.getElementById("tableDiv") as HTMLDivElement;
 
@@ -92,21 +97,20 @@ searchForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     let userRequest  :Myrequest = {
         position : searchSelect.value,
-        twoPercent : Number(pointsRange.value),
-        threePercent: Number(fgRange.value),
-        points: Number(threeRange.value)
+        twoPercent : Number(fgRange.value),
+        threePercent: Number(threeRange.value),
+        points: Number(pointsRange.value)
     }
-    // const players = await getPlayersFromAPI(userRequest)
-    const players = [player1, player2]
+    const players = await getPlayersFromAPI(userRequest)
+    // const players = [player1, player2]
     // const players = []
     showTable (players)
     const myFantasy = loadFromStorage()
     showPlayers(myFantasy)
+    console.log(players)
 });
 
 async function showTable(players :player[]):Promise<void> {
-    console.log("it is a test")
-
     tableDiv.innerHTML = "";
  
     const table = document.createElement("table");
@@ -187,6 +191,8 @@ function showPlayers(FantasyTeam : FantasyTeam){
 }
 
 function showPlayer(player : player, element : HTMLDivElement){
+    element.innerHTML = "";
+
    const list = document.createElement("ul");
    element.appendChild(list);
 
@@ -212,6 +218,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     showPlayers(myFantasy)   
 })
 
+
+threeRange.addEventListener("change", () => {
+    threeRangeSpan.textContent = threeRange.value
+})
+fgRange.addEventListener("change", () => {
+    fgRangeSpan.textContent = fgRange.value
+})
+pointsRange.addEventListener("change", () => {
+    pointsRangeSpan.textContent = pointsRange.value
+})
+
+    
 
 
 
