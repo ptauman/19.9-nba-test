@@ -120,8 +120,8 @@ searchForm.addEventListener("submit", function (event) { return __awaiter(_this,
 //פונקציה להצגת הטבלה המקבל רשימה של שחקנים
 function showTable(players) {
     return __awaiter(this, void 0, void 0, function () {
-        var table, hedername, hederposition, hederpoints, hederfg, heder3p, hederbuton, _loop_1, _i, players_1, player;
-        return __generator(this, function (_a) {
+        var table, titelsArr, _i, titelsArr_1, titel, th, _loop_1, _a, players_1, player;
+        return __generator(this, function (_b) {
             //הפונקציה מרוקנת את אלמנט הטבלה מתכנים קיימים - באם ישנם
             tableDiv.innerHTML = "";
             //ככל וברשימת השחקנים שהתקבלה מהקריאה לפונקציה הנוכחית, אין תוכן
@@ -134,60 +134,37 @@ function showTable(players) {
             table.classList.add("table");
             table.id = "players table";
             tableDiv.appendChild(table);
-            hedername = document.createElement("th");
-            hedername.textContent = "Name";
-            hedername.classList.add("th");
-            table.appendChild(hedername);
-            hederposition = document.createElement("th");
-            hederposition.textContent = "Position";
-            hederposition.classList.add("th");
-            table.appendChild(hederposition);
-            hederpoints = document.createElement("th");
-            hederpoints.textContent = "points";
-            hederpoints.classList.add("th");
-            table.appendChild(hederpoints);
-            hederfg = document.createElement("th");
-            hederfg.textContent = "FG%";
-            hederfg.classList.add("th");
-            table.appendChild(hederfg);
-            heder3p = document.createElement("th");
-            heder3p.textContent = "3P%";
-            heder3p.classList.add("th");
-            table.appendChild(heder3p);
-            hederbuton = document.createElement("th");
-            hederbuton.textContent = "add to fantasty team";
-            hederbuton.classList.add("th");
-            table.appendChild(hederbuton);
+            titelsArr = ["Name", "Position", "points", "FG%", "3P%", "action"];
+            //לולאה שתרוץ על רשימת הכותרות
+            for (_i = 0, titelsArr_1 = titelsArr; _i < titelsArr_1.length; _i++) {
+                titel = titelsArr_1[_i];
+                th = document.createElement("th");
+                //שאיבת הטקסט מהרשימה
+                th.textContent = titel;
+                //הוספת קלאס לכותרת
+                th.classList.add("th");
+                //הוספת הכותרת לטבלה
+                table.appendChild(th);
+            }
             _loop_1 = function (player) {
                 //יצירת שורה והוספתה לטבלה
                 var row = document.createElement("tr");
                 table.appendChild(row);
-                //יצירת תא לשםת קביעת ערכות הוספת קלאס והוספה לאמ=למט האב
-                var namecell = document.createElement("td");
-                namecell.textContent = player.playerName;
-                namecell.classList.add("cell");
-                row.appendChild(namecell);
-                //תא לסוג השחקן
-                var positioncell = document.createElement("td");
-                positioncell.textContent = player.position;
-                positioncell.classList.add("cell");
-                row.appendChild(positioncell);
-                //תא לנקודות 
-                var pointscell = document.createElement("td");
-                pointscell.textContent = player.points.toString();
-                pointscell.classList.add("cell");
-                row.appendChild(pointscell);
-                //תא למשהו הראשון
-                var threePercentcell = document.createElement("td");
-                threePercentcell.textContent = player.threePercent.toString();
-                threePercentcell.classList.add("cell");
-                row.appendChild(threePercentcell);
-                //תא למשהו השני
-                var twoPercentcell = document.createElement("td");
-                twoPercentcell.textContent = player.twoPercent.toString();
-                twoPercentcell.classList.add("cell");
-                row.appendChild(twoPercentcell);
-                //כפתור
+                //רשימת המידע שצריך להכינס לטבלה
+                var informationArr = [player.playerName, player.position, player.points.toString(), player.threePercent.toString(), player.twoPercent.toString()];
+                //עבור כל פריט מידע
+                for (var _c = 0, informationArr_1 = informationArr; _c < informationArr_1.length; _c++) {
+                    var info = informationArr_1[_c];
+                    //יצירת תא
+                    var cell = document.createElement("td");
+                    //העברת המידע מהרשימה לתא
+                    cell.textContent = info;
+                    //הוספת קלאס לתא
+                    cell.classList.add("cell");
+                    //הוספת התא לשורה
+                    row.appendChild(cell);
+                }
+                //יצירת כפתור והוספתו לטבלה תוך קביעת טקסט מתאים
                 var addToFantasyButton = document.createElement("button");
                 addToFantasyButton.classList.add("buton");
                 addToFantasyButton.textContent = "Add to Fanatsy";
@@ -199,8 +176,8 @@ function showTable(players) {
                 row.appendChild(addToFantasyButton);
             };
             //עבור כל שחקן בקשימת השחקניםש התקבלה
-            for (_i = 0, players_1 = players; _i < players_1.length; _i++) {
-                player = players_1[_i];
+            for (_a = 0, players_1 = players; _a < players_1.length; _a++) {
+                player = players_1[_a];
                 _loop_1(player);
             }
             return [2 /*return*/];
@@ -230,20 +207,12 @@ function loadFromStorage() {
 //פונקציה להצגת השחקנים בכרטיסים שלהםץ
 function showPlayers(FantasyTeam) {
     //ניקח כל שחקן ונשלח אותו ואת האלמנט המתאים לפונקציה שתוסיף את התוכן
-    if (FantasyTeam.PG) {
-        showPlayer(FantasyTeam.PG, pgplayer);
-    }
-    if (FantasyTeam.SG) {
-        showPlayer(FantasyTeam.SG, sgplayer);
-    }
-    if (FantasyTeam.SF) {
-        showPlayer(FantasyTeam.SF, sfplayer);
-    }
-    if (FantasyTeam.PF) {
-        showPlayer(FantasyTeam.PF, pfplayer);
-    }
-    if (FantasyTeam.C) {
-        showPlayer(FantasyTeam.C, cplayer);
+    var playersArr = ["PG", "SG", "SF", "PF", "C"];
+    var elementsArr = [pgplayer, sgplayer, sfplayer, pfplayer, cplayer];
+    for (var i = 0; i < playersArr.length; i++) {
+        if (FantasyTeam[playersArr[i]]) {
+            showPlayer(FantasyTeam[playersArr[i]], elementsArr[i]);
+        }
     }
 }
 //פונקציה למילוי כרטיסי השחרקנים. מקבלת שחקן ואמנט מתאים
@@ -256,23 +225,30 @@ function showPlayer(player, element) {
     //בניית רישמה
     var list = document.createElement("ul");
     element.appendChild(list);
-    // שורה לשם
-    var name = document.createElement("li");
-    name.textContent = player.playerName;
-    list.appendChild(name);
-    //שורה לעוד מאפיין
-    var threePercent = document.createElement("li");
-    threePercent.textContent = "threePercent ".concat(player.threePercent.toString());
-    list.appendChild(threePercent);
-    //עוד מאפיין
-    var twoPercent = document.createElement("li");
-    twoPercent.textContent = "twoPercent ".concat(player.twoPercent.toString());
-    list.appendChild(twoPercent);
-    //עוד מאפיין
-    var points = document.createElement("li");
-    points.textContent = "points ".concat(player.points.toString());
-    list.appendChild(points);
+    var infoArr = ["playerName", "points", "threePercent", "twoPercent"];
+    for (var info in infoArr) {
+        var li = document.createElement("li");
+        li.textContent = "".concat(infoArr[info], ": ").concat(player[infoArr[info]].toString());
+        list.appendChild(li);
+    }
 }
+// שורה לשם
+//   const name = document.createElement("li");
+//   name.textContent = player.playerName;
+//   list.appendChild(name);
+// //שורה לעוד מאפיין
+//   const threePercent = document.createElement("li");
+//   threePercent.textContent = `threePercent ${player.threePercent.toString()}`;
+//   list.appendChild(threePercent);
+// //עוד מאפיין
+//   const twoPercent = document.createElement("li");
+//   twoPercent.textContent = `twoPercent ${player.twoPercent.toString()}`;
+//   list.appendChild(twoPercent);
+// //עוד מאפיין
+//   const points = document.createElement("li");
+//   points.textContent = `points ${player.points.toString()}`;
+//   list.appendChild(points);
+// }
 //האזנה לטעינת הטפס
 document.addEventListener("DOMContentLoaded", function () { return __awaiter(_this, void 0, void 0, function () {
     var myFantasy;
